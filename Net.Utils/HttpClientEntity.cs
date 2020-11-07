@@ -42,6 +42,8 @@ namespace Net.Utils
             get => _host;
             set
             {
+                if (!value.ToString().Contains("http://") && !value.ToString().Contains("https://"))
+                    value = new Uri("http://" + value);
                 _host = value;
                 OnPropertyRaised();
             }
@@ -79,7 +81,7 @@ namespace Net.Utils
 
         #region Public and private methods
 
-        public void OpenTask(string url, ProxyEntity proxy, bool isTimeout)
+        public void OpenTask(ProxyEntity proxy, bool isTimeout)
         {
             if (!(_task is null))
             {
@@ -91,11 +93,11 @@ namespace Net.Utils
             }
             _task = Task.Run(async () =>
             {
-                await OpenTaskAsync(url, proxy, isTimeout);
+                await OpenTaskAsync(proxy, isTimeout);
             });
         }
 
-        public async Task OpenTaskAsync(string url, ProxyEntity proxy, bool isTimeout)
+        public async Task OpenTaskAsync(ProxyEntity proxy, bool isTimeout)
         {
             await Task.Delay(TimeSpan.FromMilliseconds(100)).ConfigureAwait(true);
             Status.Clear();
@@ -103,12 +105,12 @@ namespace Net.Utils
             try
             {
                 Status.Append($"[{sw.Elapsed}] Get started. Use proxy = [{proxy.Use}]. Timeout = [{Timeout}].");
-                Status.Append($"[{sw.Elapsed}] Url = [{url}]");
+                Status.Append($"[{sw.Elapsed}] Url = [{Host}]");
                 using (var httpClient = GetHttpClient(proxy))
                 {
                     if (isTimeout)
                         httpClient.Timeout = TimeSpan.FromMilliseconds(Timeout);
-                    var response = await httpClient.GetAsync(url);
+                    var response = await httpClient.GetAsync(Host);
                     Status.Append($"[{sw.Elapsed}] Status code: {response.StatusCode}");
                     var rawContent = await response.Content.ReadAsStringAsync();
                     Status.Append($"[{sw.Elapsed}] Response Content: {rawContent}");
