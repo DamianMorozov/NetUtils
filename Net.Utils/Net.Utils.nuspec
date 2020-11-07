@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/DamianMorozov/Net.Utils/</projectUrl>
+    <description>Network utilities</description>
+    <releaseNotes>Nuget release</releaseNotes>
+    <copyright>Copyright (c) 2020</copyright>
+    <tags>net network utils utilities</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.8" />
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System" targetFramework="net48" />
+      <frameworkAssembly assemblyName="System.Core" targetFramework="net48" />
+      <frameworkAssembly assemblyName="System.Net.Http" targetFramework="net48" />
+    </frameworkAssemblies>
+  </metadata>
+</package>
