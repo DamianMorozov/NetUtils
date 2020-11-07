@@ -6,11 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.10] - 2020-11-07
+## [0.1.12] - 2020-11-07
 ### Added
 - Net.Utils project
+- Net.Utils.HttpClientEntity
 - Net.Utils.ProxyEntity
 - Net.Utils.Tests project
+- Net.Utils.Tests.HttpClientEntity
 - Net.Utils.Tests.EnumValues
 - Net.Utils.Tests.ProxyEntityTests
 - Net.Utils.Tests.Utils

@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EnumValues.cs" />
+    <Compile Include="HttpClientEntityTests.cs" />
     <Compile Include="ProxyEntityTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils.cs" />

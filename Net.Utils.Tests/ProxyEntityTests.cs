@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using System.Threading.Tasks;
 
 namespace Net.Utils.Tests
 {
@@ -39,7 +39,7 @@ namespace Net.Utils.Tests
         {
             Utils.MethodStart();
 
-            Assert.DoesNotThrow(() => { _ = new ProxyEntity(); } );
+            Assert.DoesNotThrow(() => { _ = new ProxyEntity(); });
             Assert.DoesNotThrowAsync(async () => await Task.Run(() => { _ = new ProxyEntity(); }));
 
             Utils.MethodComplete();

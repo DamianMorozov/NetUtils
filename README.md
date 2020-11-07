@@ -4,10 +4,12 @@
 [![NuGet downloads](https://img.shields.io/nuget/dt/Net.Utils.svg)](https://www.nuget.org/packages/Net.Utils/)
 
 # Net.Utils
+- HttpClientEntity
 - ProxyEntity
 
 # Net.Utils.Tests
 - EnumValues
+- HttpClientEntityTests
 - ProxyEntityTests
 - Utils
 
