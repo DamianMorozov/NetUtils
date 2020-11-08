@@ -27,4 +27,19 @@ var httpClient = new HttpClientEntity(isTimeout, timeout, host)
     IsTaskWait = isTaskWait,
 };
 httpClient.OpenTask(proxy);
+if (httpClient.IsTaskWait)
+{
+    var status = httpClient.Status;
+    var content = httpClient.Content;
+}
+```
+### Example of PingEntity usage
+```C#
+var ping = new PingEntity(isTimeout, timeout, false);
+ping.Hosts.Add("google.com", false);
+ping.OpenTask();
+if (ping.IsTaskWait)
+{
+    var status = ping.Status;
+}
 ```
