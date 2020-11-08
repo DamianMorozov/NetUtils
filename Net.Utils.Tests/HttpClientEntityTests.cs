@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Threading.Tasks;
 
 namespace Net.Utils.Tests
@@ -7,12 +6,6 @@ namespace Net.Utils.Tests
     [TestFixture]
     internal class HttpClientEntityTests
     {
-        #region Private fields and properties
-
-        //
-
-        #endregion
-
         /// <summary>
         /// Setup private fields.
         /// </summary>
@@ -62,7 +55,7 @@ namespace Net.Utils.Tests
                     }
                 }
             }
-            
+
             Utils.MethodComplete();
         }
 
@@ -111,7 +104,7 @@ namespace Net.Utils.Tests
                     }
                 }
             }
-            
+
             Utils.MethodComplete();
         }
     }

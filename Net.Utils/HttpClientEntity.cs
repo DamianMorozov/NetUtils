@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 // ReSharper disable UnusedMember.Global
 
@@ -47,13 +46,13 @@ namespace Net.Utils
             }
         }
 
-        private bool _isTaskFinished;
-        public bool IsTaskFinished
+        private bool _isTaskActive;
+        public bool IsTaskActive
         {
-            get => _isTaskFinished;
+            get => _isTaskActive;
             private set
             {
-                _isTaskFinished = value;
+                _isTaskActive = value;
                 OnPropertyRaised();
             }
         }
@@ -127,13 +126,13 @@ namespace Net.Utils
 
         public void Setup(bool isTimeout, int timeout, Uri host)
         {
-            IsTaskWait = true;
             IsTimeout = isTimeout;
             Timeout = timeout;
             Host = host;
             Status = string.Empty;
             Content = string.Empty;
-            IsTaskFinished = false;
+            IsTaskWait = true;
+            IsTaskActive = false;
         }
 
         #endregion
@@ -160,14 +159,14 @@ namespace Net.Utils
 
         public async Task OpenTaskAsync(ProxyEntity proxy)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(10)).ConfigureAwait(false);
-            IsTaskFinished = false;
+            IsTaskActive = true;
             Status = string.Empty;
+            await Task.Delay(TimeSpan.FromMilliseconds(10)).ConfigureAwait(false);
             var sw = Stopwatch.StartNew();
             try
             {
-                Status += $"[{sw.Elapsed}] Get started. Use proxy = [{proxy.Use}]. Timeout = [{Timeout}]." + Environment.NewLine;
-                Status += $"[{sw.Elapsed}] Url = [{Host}]" + Environment.NewLine;
+                Status += $"[{sw.Elapsed}] Task started." + Environment.NewLine;
+                Status += $"[{sw.Elapsed}] IsTaskWait = [{IsTaskWait}]. Use proxy = [{proxy.Use}]. Timeout = [{Timeout}]. Url = [{Host}]" + Environment.NewLine;
                 using (var httpClient = GetHttpClient(proxy))
                 {
                     if (IsTimeout)
@@ -177,8 +176,8 @@ namespace Net.Utils
                     Content = await response.Content.ReadAsStringAsync();
                     Status += $"[{sw.Elapsed}] response.IsSuccessStatusCode : {response.IsSuccessStatusCode }" + Environment.NewLine;
                 }
-                Status += "[{sw.Elapsed}] Get finished." + Environment.NewLine;
-                IsTaskFinished = true;
+                Status += "[{sw.Elapsed}] Task finished." + Environment.NewLine;
+                IsTaskActive = false;
             }
             catch (Exception ex)
             {
