@@ -25,6 +25,39 @@ namespace Net.Utils
 
         #region Public fields and properties
 
+        private bool _isTaskWait;
+        public bool IsTaskWait
+        {
+            get => _isTaskWait;
+            set
+            {
+                _isTaskWait = value;
+                OnPropertyRaised();
+            }
+        }
+
+        private bool _isTimeout;
+        public bool IsTimeout
+        {
+            get => _isTimeout;
+            set
+            {
+                _isTimeout = value;
+                OnPropertyRaised();
+            }
+        }
+
+        private bool _isTaskFinished;
+        public bool IsTaskFinished
+        {
+            get => _isTaskFinished;
+            private set
+            {
+                _isTaskFinished = value;
+                OnPropertyRaised();
+            }
+        }
+
         private int _timeout;
         public int Timeout
         {
@@ -49,13 +82,24 @@ namespace Net.Utils
             }
         }
 
-        private StringBuilder _status;
-        public StringBuilder Status
+        private string _status;
+        public string Status
         {
             get => _status;
             set
             {
                 _status = value;
+                OnPropertyRaised();
+            }
+        }
+
+        private string _content;
+        public string Content
+        {
+            get => _content;
+            set
+            {
+                _content = value;
                 OnPropertyRaised();
             }
         }
@@ -71,17 +115,32 @@ namespace Net.Utils
             SetupDefault();
         }
 
+        public HttpClientEntity(bool isTimeout, int timeout, Uri host)
+        {
+            Setup(isTimeout, timeout, host);
+        }
+
         public void SetupDefault()
         {
-            Timeout = 5_000;
-            Host = new Uri(@"http://webcode.me");
+            Setup(false, 2_500, new Uri(@"http://localhost"));
+        }
+
+        public void Setup(bool isTimeout, int timeout, Uri host)
+        {
+            IsTaskWait = true;
+            IsTimeout = isTimeout;
+            Timeout = timeout;
+            Host = host;
+            Status = string.Empty;
+            Content = string.Empty;
+            IsTaskFinished = false;
         }
 
         #endregion
 
         #region Public and private methods
 
-        public void OpenTask(ProxyEntity proxy, bool isTimeout)
+        public void OpenTask(ProxyEntity proxy)
         {
             if (!(_task is null))
             {
@@ -93,37 +152,40 @@ namespace Net.Utils
             }
             _task = Task.Run(async () =>
             {
-                await OpenTaskAsync(proxy, isTimeout);
+                await OpenTaskAsync(proxy);
             });
+            if (IsTaskWait)
+                _task.Wait();
         }
 
-        public async Task OpenTaskAsync(ProxyEntity proxy, bool isTimeout)
+        public async Task OpenTaskAsync(ProxyEntity proxy)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(100)).ConfigureAwait(true);
-            Status.Clear();
+            await Task.Delay(TimeSpan.FromMilliseconds(10)).ConfigureAwait(false);
+            IsTaskFinished = false;
+            Status = string.Empty;
             var sw = Stopwatch.StartNew();
             try
             {
-                Status.Append($"[{sw.Elapsed}] Get started. Use proxy = [{proxy.Use}]. Timeout = [{Timeout}].");
-                Status.Append($"[{sw.Elapsed}] Url = [{Host}]");
+                Status += $"[{sw.Elapsed}] Get started. Use proxy = [{proxy.Use}]. Timeout = [{Timeout}]." + Environment.NewLine;
+                Status += $"[{sw.Elapsed}] Url = [{Host}]" + Environment.NewLine;
                 using (var httpClient = GetHttpClient(proxy))
                 {
-                    if (isTimeout)
+                    if (IsTimeout)
                         httpClient.Timeout = TimeSpan.FromMilliseconds(Timeout);
                     var response = await httpClient.GetAsync(Host);
-                    Status.Append($"[{sw.Elapsed}] Status code: {response.StatusCode}");
-                    var rawContent = await response.Content.ReadAsStringAsync();
-                    Status.Append($"[{sw.Elapsed}] Response Content: {rawContent}");
-                    Status.Append($"[{sw.Elapsed}] response.IsSuccessStatusCode : {response.IsSuccessStatusCode }");
+                    Status += $"[{sw.Elapsed}] Status code: {response.StatusCode}" + Environment.NewLine;
+                    Content = await response.Content.ReadAsStringAsync();
+                    Status += $"[{sw.Elapsed}] response.IsSuccessStatusCode : {response.IsSuccessStatusCode }" + Environment.NewLine;
                 }
-                Status.Append("[{sw.Elapsed}] Get finished.");
+                Status += "[{sw.Elapsed}] Get finished." + Environment.NewLine;
+                IsTaskFinished = true;
             }
             catch (Exception ex)
             {
-                Status.Append($"[{sw.Elapsed}] {ex.Message}");
-                Status.Append($"[{sw.Elapsed}] {ex.StackTrace}");
+                Status += $"[{sw.Elapsed}] {ex.Message}" + Environment.NewLine;
+                Status += $"[{sw.Elapsed}] {ex.StackTrace}" + Environment.NewLine;
                 if (ex.InnerException != null)
-                    Status.Append($"[{sw.Elapsed}] {ex.InnerException.Message}");
+                    Status += $"[{sw.Elapsed}] {ex.InnerException.Message}" + Environment.NewLine;
             }
             sw.Stop();
         }
