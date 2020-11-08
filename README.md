@@ -15,8 +15,16 @@
 
 
 ## How to use
-Example of usage:
-
+### Example of ProxyEntity usage
 ```C#
 var proxy = new Net.Utils.ProxyEntity(use, useDefaultCredentials, host, port, domain, username, password);
-``` 
+```
+### Example of HttpClientEntity usage
+```C#
+var proxy = new ProxyEntity();
+var httpClient = new HttpClientEntity(isTimeout, timeout, host)
+{
+    IsTaskWait = isTaskWait,
+};
+httpClient.OpenTask(proxy);
+```
