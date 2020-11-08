@@ -6,12 +6,6 @@ namespace Net.Utils.Tests
     [TestFixture]
     internal class ProgramTests
     {
-        #region Private fields and properties
-
-        //
-
-        #endregion
-
         /// <summary>
         /// Setup private fields.
         /// </summary>
