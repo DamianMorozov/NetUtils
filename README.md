@@ -5,6 +5,7 @@
 
 # Net.Utils
 - HttpClientEntity
+- PingEntity
 - ProxyEntity
 
 # Net.Utils.Tests
@@ -13,12 +14,9 @@
 - ProxyEntityTests
 - Utils
 
+[![Buy me a coffee](Assets/Buy_me_a_coffee.png?raw=true)](https://www.buymeacoffee.com/DamianVM)
 
 ## How to use
-### Example of ProxyEntity usage
-```C#
-var proxy = new Net.Utils.ProxyEntity(use, useDefaultCredentials, host, port, domain, username, password);
-```
 ### Example of HttpClientEntity usage
 ```C#
 var proxy = new ProxyEntity();
@@ -42,4 +40,8 @@ if (ping.IsTaskWait)
 {
     var status = ping.Status;
 }
+```
+### Example of ProxyEntity usage
+```C#
+var proxy = new Net.Utils.ProxyEntity(use, useDefaultCredentials, host, port, domain, username, password);
 ```
