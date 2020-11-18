@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.30] - 2020-11-18
+### Changed
+- Net.Utils.HttpClientEntity: fixed bugs
+- Net.Utils.PingEntity: fixed bugs
+- Net.Utils.Tests.HttpClientEntityTests
+- Net.Utils.Tests.PingEntityTests
+
 ## [0.1.21] - 2020-11-08
 ### Added
 - Net.Utils.PingEntity

@@ -24,35 +24,13 @@ namespace Net.Utils
 
         #region Public fields and properties
 
-        private bool _isTaskWait;
-        public bool IsTaskWait
+        private bool _taskStop;
+        public bool TaskStop
         {
-            get => _isTaskWait;
-            set
-            {
-                _isTaskWait = value;
-                OnPropertyRaised();
-            }
-        }
-
-        private bool _isTimeout;
-        public bool IsTimeout
-        {
-            get => _isTimeout;
-            set
-            {
-                _isTimeout = value;
-                OnPropertyRaised();
-            }
-        }
-
-        private bool _isTaskActive;
-        public bool IsTaskActive
-        {
-            get => _isTaskActive;
+            get => _taskStop;
             private set
             {
-                _isTaskActive = value;
+                _taskStop = value;
                 OnPropertyRaised();
             }
         }
@@ -114,32 +92,30 @@ namespace Net.Utils
             SetupDefault();
         }
 
-        public HttpClientEntity(bool isTimeout, int timeout, Uri host)
+        public HttpClientEntity(int timeout, Uri host)
         {
-            Setup(isTimeout, timeout, host);
+            Setup(timeout, host);
         }
 
         public void SetupDefault()
         {
-            Setup(false, 2_500, new Uri(@"http://localhost"));
+            Setup(500, new Uri(@"http://localhost"));
         }
 
-        public void Setup(bool isTimeout, int timeout, Uri host)
+        public void Setup(int timeout, Uri host)
         {
-            IsTimeout = isTimeout;
             Timeout = timeout;
             Host = host;
             Status = string.Empty;
             Content = string.Empty;
-            IsTaskWait = true;
-            IsTaskActive = false;
+            TaskStop = true;
         }
 
         #endregion
 
         #region Public and private methods
 
-        public void OpenTask(ProxyEntity proxy)
+        public void OpenTask(bool isTaskWait, ProxyEntity proxy)
         {
             if (!(_task is null))
             {
@@ -151,33 +127,38 @@ namespace Net.Utils
             }
             _task = Task.Run(async () =>
             {
-                await OpenTaskAsync(proxy);
+                await OpenTaskAsync(isTaskWait, proxy);
             });
-            if (IsTaskWait)
+            if (isTaskWait)
                 _task.Wait();
         }
 
-        public async Task OpenTaskAsync(ProxyEntity proxy)
+        public async Task OpenTaskAsync(bool isTaskWait, ProxyEntity proxy)
         {
-            IsTaskActive = true;
+            TaskStop = false;
             Status = string.Empty;
-            await Task.Delay(TimeSpan.FromMilliseconds(10)).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
             var sw = Stopwatch.StartNew();
             try
             {
                 Status += $"[{sw.Elapsed}] Task started." + Environment.NewLine;
-                Status += $"[{sw.Elapsed}] IsTaskWait = [{IsTaskWait}]. Use proxy = [{proxy.Use}]. Timeout = [{Timeout}]. Url = [{Host}]" + Environment.NewLine;
+                Status +=
+                    $"[{sw.Elapsed}] IsTaskWait = [{isTaskWait}]. Use proxy = [{proxy.Use}]. Timeout = [{Timeout}]. Url = [{Host}]" +
+                    Environment.NewLine;
+                if (TaskStop) return;
                 using (var httpClient = GetHttpClient(proxy))
                 {
-                    if (IsTimeout)
-                        httpClient.Timeout = TimeSpan.FromMilliseconds(Timeout);
-                    var response = await httpClient.GetAsync(Host);
+                    if (TaskStop) return;
+                    httpClient.Timeout = TimeSpan.FromMilliseconds(Timeout);
+                    var response = await httpClient.GetAsync(Host).ConfigureAwait(false);
+                    if (TaskStop) return;
                     Status += $"[{sw.Elapsed}] Status code: {response.StatusCode}" + Environment.NewLine;
                     Content = await response.Content.ReadAsStringAsync();
-                    Status += $"[{sw.Elapsed}] response.IsSuccessStatusCode : {response.IsSuccessStatusCode }" + Environment.NewLine;
+                    if (TaskStop) return;
+                    Status += $"[{sw.Elapsed}] response.IsSuccessStatusCode : {response.IsSuccessStatusCode}" +
+                              Environment.NewLine;
                 }
                 Status += "[{sw.Elapsed}] Task finished." + Environment.NewLine;
-                IsTaskActive = false;
             }
             catch (Exception ex)
             {
@@ -186,7 +167,17 @@ namespace Net.Utils
                 if (ex.InnerException != null)
                     Status += $"[{sw.Elapsed}] {ex.InnerException.Message}" + Environment.NewLine;
             }
+            finally
+            {
+                TaskStop = true;
+            }
             sw.Stop();
+        }
+
+        public void Close()
+        {
+            Status += "Task stoped." + Environment.NewLine;
+            TaskStop = true;
         }
 
         public HttpClient GetHttpClient(ProxyEntity proxy)

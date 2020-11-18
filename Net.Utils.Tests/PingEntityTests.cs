@@ -52,17 +52,17 @@ namespace Net.Utils.Tests
 
             foreach (var isRepeat in EnumValues.GetBool())
             {
-                foreach (var timeout in EnumValues.GetInt())
+                foreach (var timeoutPing in EnumValues.GetTimeoutMs())
                 {
-                    foreach (var isTimeout in EnumValues.GetBool())
+                    foreach (var timeoutTask in EnumValues.GetTimeoutMs())
                     {
                         Assert.DoesNotThrow(() =>
                         {
-                            _ = new PingEntity(isTimeout, timeout, isRepeat);
+                            _ = new PingEntity(timeoutPing, timeoutTask, isRepeat);
                         });
                         Assert.DoesNotThrowAsync(async () => await Task.Run(() =>
                         {
-                            _ = new PingEntity(isTimeout, timeout, isRepeat);
+                            _ = new PingEntity(timeoutPing, timeoutTask, isRepeat);
                         }));
                     }
                 }
@@ -76,30 +76,32 @@ namespace Net.Utils.Tests
         {
             Utils.MethodStart();
 
-            foreach (var timeout in EnumValues.GetInt())
+            foreach (var timeoutPing in EnumValues.GetTimeoutMs())
             {
-                foreach (var isTimeout in EnumValues.GetBool())
+                foreach (var timeoutTask in EnumValues.GetTimeoutMs())
                 {
                     Assert.DoesNotThrow(() =>
                     {
-                        var ping = new PingEntity(isTimeout, timeout, false);
-                        ping.Hosts.Add("localhost", false);
-                        ping.Hosts.Add("google.com", false);
-                        ping.OpenTask();
-                        if (ping.IsTaskWait)
+                        foreach (var isTaskWait in EnumValues.GetBool())
                         {
-                            TestContext.WriteLine($@"{ping.Status}");
+                            var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, isRepeat: false);
+                            ping.Hosts.Add("localhost");
+                            ping.Hosts.Add("google.com");
+                            ping.OpenTask(isTaskWait);
+                            if (isTaskWait)
+                                TestContext.WriteLine($@"{ping.Status}");
                         }
                     });
                     Assert.DoesNotThrowAsync(async () => await Task.Run(() =>
                     {
-                        var ping = new PingEntity(isTimeout, timeout, false);
-                        ping.Hosts.Add("localhost", false);
-                        ping.Hosts.Add("google.com", false);
-                        ping.OpenTask();
-                        if (ping.IsTaskWait)
+                        foreach (var isTaskWait in EnumValues.GetBool())
                         {
-                            TestContext.WriteLine($@"{ping.Status}");
+                            var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, isRepeat: false);
+                            ping.Hosts.Add("localhost");
+                            ping.Hosts.Add("google.com");
+                            ping.OpenTask(isTaskWait);
+                            if (isTaskWait)
+                                TestContext.WriteLine($@"{ping.Status}");
                         }
                     }));
                 }

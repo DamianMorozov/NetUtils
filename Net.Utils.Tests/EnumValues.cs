@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 // ReSharper disable UnusedMember.Global
-// Last changed 2020-10-29.
+// Last changed 2020-11-18.
 
 namespace Net.Utils.Tests
 {
@@ -109,6 +109,15 @@ namespace Net.Utils.Tests
         public static List<Uri> GetUri()
         {
             return new List<Uri>() { new Uri("http://google.com/"), new Uri("http://microsoft.com/") };
+        }
+
+        /// <summary>
+        /// List of timeout values in ms.
+        /// </summary>
+        /// <returns></returns>
+        public static List<int> GetTimeoutMs()
+        {
+            return new List<int>() { 0, 50, 500 };
         }
     }
 }

@@ -18,26 +18,21 @@
 ### Example of HttpClientEntity usage
 ```C#
 var proxy = new ProxyEntity();
-var httpClient = new HttpClientEntity(isTimeout, timeout, host)
+var httpClient = new HttpClientEntity(timeout, host);
+httpClient.OpenTask(isTaskWait, proxy);
+if (isTaskWait)
 {
-    IsTaskWait = isTaskWait,
-};
-httpClient.OpenTask(proxy);
-if (httpClient.IsTaskWait)
-{
-    var status = httpClient.Status;
-    var content = httpClient.Content;
+    TestContext.WriteLine($@"{httpClient.Status}");
+    TestContext.WriteLine($@"{httpClient.Content}");
 }
 ```
 ### Example of PingEntity usage
 ```C#
-var ping = new PingEntity(isTimeout, timeout, false);
-ping.Hosts.Add("google.com", false);
-ping.OpenTask();
-if (ping.IsTaskWait)
-{
-    var status = ping.Status;
-}
+var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, isRepeat: false);
+ping.Hosts.Add("google.com");
+ping.OpenTask(isTaskWait);
+if (isTaskWait)
+    TestContext.WriteLine($@"{ping.Status}");
 ```
 ### Example of ProxyEntity usage
 ```C#
