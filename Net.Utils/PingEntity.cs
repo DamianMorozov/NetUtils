@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Net.Utils
 {
-    public class PingEntity
+    public class PingEntity : INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Net.Utils
 {
-    public class HttpClientEntity
+    public class HttpClientEntity : INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
 
