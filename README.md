@@ -46,5 +46,8 @@ var proxy = new Net.Utils.ProxyEntity(use, useDefaultCredentials, host, port, do
 ## Net.Examples
 [Visit this repo for view examples](https://github.com/DamianMorozov/Net.Examples)
 
+## Telegram bot
+[Visit this bot for test examples](tg://resolve?domain=NetUtilsBot)
+
 ## Please, if this tool has been useful for you consider to donate
 [![Buy me a coffee](Assets/Buy_me_a_coffee.png?raw=true)](https://www.buymeacoffee.com/DamianVM)
