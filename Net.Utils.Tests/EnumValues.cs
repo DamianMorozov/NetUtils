@@ -117,7 +117,7 @@ namespace Net.Utils.Tests
         /// <returns></returns>
         public static List<int> GetTimeoutMs()
         {
-            return new List<int>() { 0, 50, 500 };
+            return new List<int>() { 50, 500 };
         }
     }
 }

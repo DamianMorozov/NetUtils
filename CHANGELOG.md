@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.34] - 2020-11-23
+### Changed
+- Net.Utils.PingEntity: fixed catch exceptions and async method, added info
+- Net.Utils.Tests.PingEntityTests: fixed catch exceptions and async method
+
 ## [0.1.31] - 2020-11-22
 ### Changed
 - Net.Utils.HttpClientEntity: fixed INotifyPropertyChanged

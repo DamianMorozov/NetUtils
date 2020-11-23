@@ -28,16 +28,23 @@ if (isTaskWait)
 ```
 ### Example of PingEntity usage
 ```C#
-var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, isRepeat: false);
+var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, useRepeat: false, useStopWatch: useStopWatch);
+ping.Hosts.Add("localhost");
 ping.Hosts.Add("google.com");
-ping.OpenTask(isTaskWait);
-if (isTaskWait)
-    TestContext.WriteLine($@"{ping.Status}");
+ping.Hosts.Add("google-fake.com");
+var task = Task.Run(async () =>
+{
+    await ping.OpenAsync().ConfigureAwait(true);
+});
+task.Wait();
+TestContext.WriteLine($@"{ping.Status}");
 ```
 ### Example of ProxyEntity usage
 ```C#
 var proxy = new Net.Utils.ProxyEntity(use, useDefaultCredentials, host, port, domain, username, password);
 ```
+## Net.Examples
+[Visit this repo for view examples](https://github.com/DamianMorozov/Net.Examples)
 
 ## Please, if this tool has been useful for you consider to donate
 [![Buy me a coffee](Assets/Buy_me_a_coffee.png?raw=true)](https://www.buymeacoffee.com/DamianVM)

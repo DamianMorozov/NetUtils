@@ -24,29 +24,40 @@ namespace Net.Utils
 
         #region Public fields and properties
 
-        private bool _isRepeat;
-        public bool IsRepeat
+        private bool _useRepeat;
+        public bool UseRepeat
         {
-            get => _isRepeat;
+            get => _useRepeat;
             set
             {
-                _isRepeat = value;
+                _useRepeat = value;
                 OnPropertyRaised();
             }
         }
 
-        private bool _taskStop;
-        public bool TaskStop
+        private bool _useStopWatch;
+        public bool UseStopWatch
         {
-            get => _taskStop;
+            get => _useStopWatch;
+            set
+            {
+                _useStopWatch = value;
+                OnPropertyRaised();
+            }
+        }
+
+        private bool _isStop;
+        public bool IsStop
+        {
+            get => _isStop;
             private set
             {
-                _taskStop = value;
+                _isStop = value;
                 OnPropertyRaised();
             }
         }
 
-        private Task _task;
+        private readonly object _locker = new object();
 
         private int _timeoutPing;
         public int TimeoutPing
@@ -59,13 +70,13 @@ namespace Net.Utils
             }
         }
 
-        private int _timeoutTask;
-        public int TimeoutTask
+        private int _timeoutRepeat;
+        public int TimeoutRepeat
         {
-            get => _timeoutTask;
+            get => _timeoutRepeat;
             set
             {
-                _timeoutTask = value;
+                _timeoutRepeat = value;
                 OnPropertyRaised();
             }
         }
@@ -101,23 +112,24 @@ namespace Net.Utils
             SetupDefault();
         }
 
-        public PingEntity(int timeoutPing, int timeoutTask, bool isRepeat)
+        public PingEntity(int timeoutPing, int timeoutTask, bool useRepeat, bool useStopWatch)
         {
-            Setup(timeoutPing, timeoutTask, isRepeat);
+            Setup(timeoutPing, timeoutTask, useRepeat, useStopWatch);
         }
 
         public void SetupDefault()
         {
-            Setup(2_500, 1_000, false);
+            Setup(2_500, 1_000, false, false);
         }
 
-        public void Setup(int timeoutPing, int timeoutTask, bool isRepeat)
+        public void Setup(int timeoutPing, int timeoutRepeat, bool useRepeat, bool useStopWatch)
         {
             TimeoutPing = timeoutPing;
-            TimeoutTask = timeoutTask;
-            IsRepeat = isRepeat;
+            TimeoutRepeat = timeoutRepeat;
+            UseRepeat = useRepeat;
+            UseStopWatch = useStopWatch;
             Status = string.Empty;
-            TaskStop = true;
+            IsStop = true;
             Hosts = new HashSet<string>();
         }
 
@@ -125,87 +137,86 @@ namespace Net.Utils
 
         #region Public and private methods
 
-        public void OpenTask(bool isTaskWait)
+        public void Open()
         {
-            if (!(_task is null))
+            lock (_locker)
             {
-                if (_task.Status == TaskStatus.RanToCompletion)
+                Status = "Job started." + Environment.NewLine;
+                var sw = Stopwatch.StartNew();
+                try
                 {
-                    _task.Dispose();
-                    _task = null;
+                    Status += (UseStopWatch
+                        ? $"[{sw.Elapsed}]. Ping settings: TimeoutPing = [{TimeoutPing}], UseRepeat = [{UseRepeat}], TimeoutRepeat = [{TimeoutRepeat}]."
+                        : $"Ping settings: TimeoutPing = [{TimeoutPing}], UseRepeat = [{UseRepeat}], TimeoutRepeat = [{TimeoutRepeat}].") +
+                          Environment.NewLine;
+                    IsStop = false;
+                    do
+                    {
+                        using (var ping = new Ping())
+                        {
+                            foreach (var host in Hosts)
+                            {
+                                try
+                                {
+                                    if (IsStop) return;
+                                    var reply = ping.Send(host.Trim(), TimeoutPing);
+                                    if (reply is null)
+                                    {
+                                        Status += (UseStopWatch ? $"[{sw.Elapsed}]. Reply is null" : "Reply is null") + Environment.NewLine;
+                                    }
+                                    else
+                                    {
+                                        Status += (UseStopWatch
+                                                ? $"[{sw.Elapsed}]. Exchange packages. Host: {host}. Address: {reply.Address}. Status: {reply.Status}. Buffer.Length: {reply.Buffer.Length}. RoundtripTime: {reply.RoundtripTime}. TTL: {reply.Options.Ttl}."
+                                                : $"Host: {host}. Exchange packages. Address: {reply.Address}. Status: {reply.Status}. Buffer.Length: {reply.Buffer.Length}. RoundtripTime: {reply.RoundtripTime}. TTL: {reply.Options.Ttl}.") + Environment.NewLine;
+                                    }
+                                }
+                                catch (PingException pex)
+                                {
+                                    Status += (UseStopWatch ? $"[{sw.Elapsed}]. Ping exception: {pex.Message}" : $"Ping exception: {pex.Message}") + Environment.NewLine;
+                                    if (!(pex.InnerException is null))
+                                        Status += (UseStopWatch ? $"[{sw.Elapsed}]. Ping inner exception: {pex.InnerException.Message}" : $"Ping inner exception: {pex.InnerException.Message}") + Environment.NewLine;
+                                }
+                            }
+                            System.Threading.Thread.Sleep(TimeoutRepeat);
+                            if (UseRepeat)
+                            Status += (UseStopWatch ? $"[{sw.Elapsed}]. Waiting {TimeoutRepeat} milliseconds" : $"Waiting {TimeoutRepeat} milliseconds") + Environment.NewLine;
+                        }
+                        // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
+                    } while (UseRepeat);
+                    Status += (UseStopWatch ? $"[{sw.Elapsed}]. Job finished." : "Job finished.") + Environment.NewLine;
                 }
+                catch (Exception ex)
+                {
+                    Status += (UseStopWatch ? $"[{sw.Elapsed}]. Ping exception: {ex.Message}" : $"Ping exception: {ex.Message}" ) + Environment.NewLine;
+                    if (!(ex.InnerException is null))
+                        Status += (UseStopWatch ? $"[{sw.Elapsed}]. Ping inner exception: {ex.InnerException.Message}" : $"Ping inner exception: {ex.InnerException.Message}") + Environment.NewLine;
+                    throw;
+                }
+                finally
+                {
+                    IsStop = true;
+                }
+                sw.Stop();
             }
-            _task = Task.Run(async () =>
-            {
-                await OpenTaskAsync(isTaskWait, IsRepeat);
-            });
-            if (isTaskWait)
-                _task.Wait();
         }
 
-        private async Task OpenTaskAsync(bool isTaskWait, bool isRepeat)
+        public async Task OpenAsync()
         {
             await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
-            var sw = Stopwatch.StartNew();
-            try
-            {
-                Status = string.Empty;
-                Status += $"[{sw.Elapsed}] Task started." + Environment.NewLine;
-                Status +=
-                    $"[{sw.Elapsed}] IsTaskWait = [{isTaskWait}]. IsRepeat = [{IsRepeat}]. TimeoutPing = [{TimeoutPing}]. TimeoutTask = [{TimeoutTask}]." +
-                    Environment.NewLine;
-                TaskStop = false;
-                do
-                {
-                    using (var ping = new Ping())
-                    {
-                        foreach (var host in Hosts)
-                        {
-                            if (TaskStop) return;
-                            try
-                            {
-                                var reply = ping.Send(host.Trim(), TimeoutPing);
-                                Status += reply != null
-                                    ? $"[{sw.Elapsed}] Host: {host}. Address: {reply.Address}. Status: {reply.Status}. RoundtripTime: {reply.RoundtripTime}." +
-                                      Environment.NewLine
-                                    : $"[{sw.Elapsed}] Reply is null" + Environment.NewLine;
-                            }
-                            catch (Exception ex)
-                            {
-                                Status += $"[{sw.Elapsed}] Ping {host} exception: {ex.Message}" + Environment.NewLine;
-                                if (!(ex.InnerException is null))
-                                    Status +=
-                                        $"[{sw.Elapsed}] Ping {host} inner exception: {ex.InnerException.Message}" +
-                                        Environment.NewLine;
-                            }
-                        }
-
-                        await Task.Delay(TimeSpan.FromMilliseconds(TimeoutTask)).ConfigureAwait(false);
-                        Status += $"[{sw.Elapsed}] Waiting {TimeoutTask} milliseconds" + Environment.NewLine;
-                    }
-
-                    // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-                } while (isRepeat);
-
-                Status += $"[{sw.Elapsed}] Task finished." + Environment.NewLine;
-            }
-            catch (Exception ex)
-            {
-                Status += $"[{sw.Elapsed}] Ping exception: {ex.Message}";
-                if (!(ex.InnerException is null))
-                    Status += $"[{sw.Elapsed}] Ping inner exception: {ex.InnerException.Message}";
-            }
-            finally
-            {
-                TaskStop = true;
-            }
-            sw.Stop();
+            Open();
         }
 
         public void Close()
         {
-            Status += "Task stoped." + Environment.NewLine;
-            TaskStop = true;
+            Status += "Job stoped." + Environment.NewLine;
+            IsStop = true;
+        }
+
+        public async Task CloseAsync()
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
+            Close();
         }
 
         #endregion
