@@ -37,7 +37,7 @@ if (isTaskWait)
 ```
 ### Example of PingEntity usage
 ```C#
-var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, useRepeat: false, useStopWatch: useStopWatch);
+var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, useRepeat: false);
 ping.Hosts.Add("localhost");
 ping.Hosts.Add("google.com");
 ping.Hosts.Add("google-fake.com");
