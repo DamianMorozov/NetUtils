@@ -35,17 +35,6 @@ namespace Net.Utils
             }
         }
 
-        private bool _useStopWatch;
-        public bool UseStopWatch
-        {
-            get => _useStopWatch;
-            set
-            {
-                _useStopWatch = value;
-                OnPropertyRaised();
-            }
-        }
-
         private bool _isStop;
         public bool IsStop
         {
@@ -81,13 +70,24 @@ namespace Net.Utils
             }
         }
 
-        private string _status;
-        public string Status
+        private string _settings;
+        public string Settings
         {
-            get => _status;
+            get => _settings;
             set
             {
-                _status = value;
+                _settings = value;
+                OnPropertyRaised();
+            }
+        }
+
+        private string _log;
+        public string Log
+        {
+            get => _log;
+            set
+            {
+                _log = value;
                 OnPropertyRaised();
             }
         }
@@ -112,23 +112,23 @@ namespace Net.Utils
             SetupDefault();
         }
 
-        public PingEntity(int timeoutPing, int timeoutTask, bool useRepeat, bool useStopWatch)
+        public PingEntity(int timeoutPing, int timeoutTask, bool useRepeat)
         {
-            Setup(timeoutPing, timeoutTask, useRepeat, useStopWatch);
+            Setup(timeoutPing, timeoutTask, useRepeat);
         }
 
         public void SetupDefault()
         {
-            Setup(2_500, 1_000, false, false);
+            Setup(2_500, 1_000, false);
         }
 
-        public void Setup(int timeoutPing, int timeoutRepeat, bool useRepeat, bool useStopWatch)
+        public void Setup(int timeoutPing, int timeoutRepeat, bool useRepeat)
         {
             TimeoutPing = timeoutPing;
             TimeoutRepeat = timeoutRepeat;
             UseRepeat = useRepeat;
-            UseStopWatch = useStopWatch;
-            Status = string.Empty;
+            Settings = string.Empty;
+            Log = string.Empty;
             IsStop = true;
             Hosts = new HashSet<string>();
         }
@@ -141,14 +141,13 @@ namespace Net.Utils
         {
             lock (_locker)
             {
-                Status = "Job started." + Environment.NewLine;
+                Settings = string.Empty;
+                Log = string.Empty;
                 var sw = Stopwatch.StartNew();
                 try
                 {
-                    Status += (UseStopWatch
-                        ? $"[{sw.Elapsed}]. Ping settings: TimeoutPing = [{TimeoutPing}], UseRepeat = [{UseRepeat}], TimeoutRepeat = [{TimeoutRepeat}]."
-                        : $"Ping settings: TimeoutPing = [{TimeoutPing}], UseRepeat = [{UseRepeat}], TimeoutRepeat = [{TimeoutRepeat}].") +
-                          Environment.NewLine;
+                    Settings += $"Ping settings: TimeoutPing = [{TimeoutPing}], UseRepeat = [{UseRepeat}], TimeoutRepeat = [{TimeoutRepeat}]."
+                                + Environment.NewLine;
                     IsStop = false;
                     do
                     {
@@ -162,35 +161,33 @@ namespace Net.Utils
                                     var reply = ping.Send(host.Trim(), TimeoutPing);
                                     if (reply is null)
                                     {
-                                        Status += (UseStopWatch ? $"[{sw.Elapsed}]. Reply is null" : "Reply is null") + Environment.NewLine;
+                                        Log += "Reply is null" + Environment.NewLine;
                                     }
                                     else
                                     {
-                                        Status += (UseStopWatch
-                                                ? $"[{sw.Elapsed}]. Exchange packages. Host: {host}. Address: {reply.Address}. Status: {reply.Status}. Buffer.Length: {reply.Buffer.Length}. RoundtripTime: {reply.RoundtripTime}. TTL: {reply.Options.Ttl}."
-                                                : $"Host: {host}. Exchange packages. Address: {reply.Address}. Status: {reply.Status}. Buffer.Length: {reply.Buffer.Length}. RoundtripTime: {reply.RoundtripTime}. TTL: {reply.Options.Ttl}.") + Environment.NewLine;
+                                        Log += $"Exchange packages with {host} with {reply.Buffer.Length} bytes" + Environment.NewLine;
+                                        Log += $"Reply from {reply.Address}: status = {reply.Status}, roundtrip time = {reply.RoundtripTime} ms, TTL = {reply.Options.Ttl}" + Environment.NewLine;
                                     }
                                 }
                                 catch (PingException pex)
                                 {
-                                    Status += (UseStopWatch ? $"[{sw.Elapsed}]. Ping exception: {pex.Message}" : $"Ping exception: {pex.Message}") + Environment.NewLine;
-                                    if (!(pex.InnerException is null))
-                                        Status += (UseStopWatch ? $"[{sw.Elapsed}]. Ping inner exception: {pex.InnerException.Message}" : $"Ping inner exception: {pex.InnerException.Message}") + Environment.NewLine;
+                                    Log += $"Ping exception: {pex.Message}" + Environment.NewLine;
+                                    //if (!(pex.InnerException is null))
+                                    //    Log += $"Ping inner exception: {pex.InnerException.Message}" + Environment.NewLine;
                                 }
                             }
                             System.Threading.Thread.Sleep(TimeoutRepeat);
                             if (UseRepeat)
-                            Status += (UseStopWatch ? $"[{sw.Elapsed}]. Waiting {TimeoutRepeat} milliseconds" : $"Waiting {TimeoutRepeat} milliseconds") + Environment.NewLine;
+                                Log += $"Waiting {TimeoutRepeat} milliseconds" + Environment.NewLine;
                         }
                         // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
                     } while (UseRepeat);
-                    Status += (UseStopWatch ? $"[{sw.Elapsed}]. Job finished." : "Job finished.") + Environment.NewLine;
                 }
                 catch (Exception ex)
                 {
-                    Status += (UseStopWatch ? $"[{sw.Elapsed}]. Ping exception: {ex.Message}" : $"Ping exception: {ex.Message}" ) + Environment.NewLine;
+                    Log += $"Ping exception: {ex.Message}" + Environment.NewLine;
                     if (!(ex.InnerException is null))
-                        Status += (UseStopWatch ? $"[{sw.Elapsed}]. Ping inner exception: {ex.InnerException.Message}" : $"Ping inner exception: {ex.InnerException.Message}") + Environment.NewLine;
+                        Log += $"Ping inner exception: {ex.InnerException.Message}" + Environment.NewLine;
                     throw;
                 }
                 finally
@@ -209,7 +206,6 @@ namespace Net.Utils
 
         public void Close()
         {
-            Status += "Job stoped." + Environment.NewLine;
             IsStop = true;
         }
 

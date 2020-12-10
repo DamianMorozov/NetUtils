@@ -1,48 +1,91 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3E296634-AF19-4367-B6B5-1BE484856046}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Net.Utils</RootNamespace>
-    <AssemblyName>Net.Utils</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net45;net46;net461;net472;net48</TargetFrameworks>
+    <files>
+      <file src="bin\Release\net45\Net.Utils.dll" target="lib\net45\Net.Utils.dll" />
+      <file src="bin\Release\net46\Net.Utils.dll" target="lib\net46\Net.Utils.dll" />
+      <file src="bin\Release\net461\Net.Utils.dll" target="lib\net461\Net.Utils.dll" />
+      <file src="bin\Release\net47\Net.Utils.dll" target="lib\net47\Net.Utils.dll" />
+      <file src="bin\Release\net472\Net.Utils.dll" target="lib\net472\Net.Utils.dll" />
+      <file src="bin\Release\net48\Net.Utils.dll" target="lib\net48\Net.Utils.dll" />
+      <file src="bin\Release\netstandard2.0\Net.Utils.dll" target="lib\netstandard2.0\Net.Utils.dll" />
+      <file src="bin\Release\netstandard2.1\Net.Utils.dll" target="lib\netstandard2.1\Net.Utils.dll" />
+    </files>
+    <Version>0.1.40</Version>
+    <title>Net.Utils</title>
+    <Authors>Damian Viktorovich Morozov</Authors>
+    <Copyright>Copyright (c) 2020</Copyright>
+    <NeutralLanguage>en</NeutralLanguage>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <projectUrl>https://github.com/DamianMorozov/Net.Utils/</projectUrl>
+    <tags>net network utils utilities</tags>
+    <RepositoryType>Github</RepositoryType>
+    <RepositoryUrl>https://github.com/DamianMorozov/Net.Utils/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/DamianMorozov/Net.Utils/</PackageProjectUrl>
+    <PackageLicenseFile></PackageLicenseFile>
+    <Description>Network utilities</Description>
+    <PackageTags>net, utils, network, utilities</PackageTags>
+    <PackageReleaseNotes>### Changed
+- Changed target platform of projects
+- Net.Utils.PingEntity: changed Status property to Log and Settings
+### Added
+- Multi-targeted platforms
+  - netstandard2.0
+  - netstandard2.1
+  - net45
+  - net46
+  - net461
+  - net472
+  - net48</PackageReleaseNotes>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
+
   <ItemGroup>
+    <Content Include="..\\README.md">
+      <Pack>true</Pack>
+      <PackagePath>\</PackagePath>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net45'">
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="PingEntity.cs" />
-    <Compile Include="HttpClientEntity.cs" />
-    <Compile Include="ProxyEntity.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+  <ItemGroup Condition="'$(TargetFramework)'=='net46'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Net.Utils.nuspec" />
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup Condition="'$(TargetFramework)'=='net47'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='net48'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
 </Project>

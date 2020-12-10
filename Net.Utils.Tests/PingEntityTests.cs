@@ -56,17 +56,14 @@ namespace Net.Utils.Tests
                 {
                     foreach (var timeoutTask in EnumValues.GetTimeoutMs())
                     {
-                        foreach (var useStopWatch in EnumValues.GetBool())
+                        Assert.DoesNotThrow(() =>
                         {
-                            Assert.DoesNotThrow(() =>
-                            {
-                                _ = new PingEntity(timeoutPing, timeoutTask, false, useStopWatch);
-                            });
-                            Assert.DoesNotThrowAsync(async () => await Task.Run(() =>
-                            {
-                                _ = new PingEntity(timeoutPing, timeoutTask, false, useStopWatch);
-                            }));
-                        }
+                            _ = new PingEntity(timeoutPing, timeoutTask, false);
+                        });
+                        Assert.DoesNotThrowAsync(async () => await Task.Run(() =>
+                        {
+                            _ = new PingEntity(timeoutPing, timeoutTask, false);
+                        }));
                     }
                 }
             }
@@ -85,27 +82,27 @@ namespace Net.Utils.Tests
                 {
                     Assert.DoesNotThrow(() =>
                     {
-                        foreach (var useStopWatch in EnumValues.GetBool())
-                        {
-                            var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, useRepeat: false, useStopWatch: useStopWatch);
-                            ping.Hosts.Add("localhost");
-                            ping.Hosts.Add("google.com");
-                            ping.Hosts.Add("google-fake.com");
-                            ping.Open();
-                            TestContext.WriteLine($@"{ping.Status}");
-                        }
+                        var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, useRepeat: false);
+                        ping.Hosts.Add("google.com");
+                        ping.Hosts.Add("google-fake.com");
+                        ping.Hosts.Add("127.0.0.1");
+                        ping.Hosts.Add("1.1.1.1");
+                        //ping.Hosts.Add("localhost");
+                        ping.Open();
+                        ping.Close();
+                        TestContext.WriteLine($@"{ping.Log}");
                     });
                     Assert.DoesNotThrowAsync(async () => await Task.Run(() =>
                     {
-                        foreach (var useStopWatch in EnumValues.GetBool())
-                        {
-                            var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, useRepeat: false, useStopWatch: useStopWatch);
-                            ping.Hosts.Add("localhost");
-                            ping.Hosts.Add("google.com");
-                            ping.Hosts.Add("google-fake.com");
-                            ping.Open();
-                            TestContext.WriteLine($@"{ping.Status}");
-                        }
+                        var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, useRepeat: false);
+                        ping.Hosts.Add("google.com");
+                        ping.Hosts.Add("google-fake.com");
+                        ping.Hosts.Add("127.0.0.1");
+                        ping.Hosts.Add("1.1.1.1");
+                        //ping.Hosts.Add("localhost");
+                        ping.Open();
+                        ping.Close();
+                        TestContext.WriteLine($@"{ping.Log}");
                     }));
                 }
             }
@@ -124,35 +121,43 @@ namespace Net.Utils.Tests
                 {
                     Assert.DoesNotThrow(() =>
                     {
-                        foreach (var useStopWatch in EnumValues.GetBool())
+                        var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, useRepeat: false);
+                        ping.Hosts.Add("google.com");
+                        ping.Hosts.Add("google-fake.com");
+                        ping.Hosts.Add("127.0.0.1");
+                        ping.Hosts.Add("1.1.1.1");
+                        //ping.Hosts.Add("localhost");
+                        var task = Task.Run(async () =>
                         {
-                            var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, useRepeat: false, useStopWatch: useStopWatch);
-                            ping.Hosts.Add("localhost");
-                            ping.Hosts.Add("google.com");
-                            ping.Hosts.Add("google-fake.com");
-                            var task = Task.Run(async () =>
-                            {
-                                await ping.OpenAsync().ConfigureAwait(true);
-                            });
-                            task.Wait();
-                            TestContext.WriteLine($@"{ping.Status}");
-                        }
+                            await ping.OpenAsync().ConfigureAwait(true);
+                        });
+                        task.Wait();
+                        var taskClose = Task.Run(async () =>
+                        {
+                            await ping.CloseAsync().ConfigureAwait(true);
+                        });
+                        taskClose.Wait();
+                        TestContext.WriteLine($@"{ping.Log}");
                     });
                     Assert.DoesNotThrowAsync(async () => await Task.Run(() =>
                     {
-                        foreach (var useStopWatch in EnumValues.GetBool())
+                        var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, useRepeat: false);
+                        ping.Hosts.Add("google.com");
+                        ping.Hosts.Add("google-fake.com");
+                        ping.Hosts.Add("127.0.0.1");
+                        ping.Hosts.Add("1.1.1.1");
+                        //ping.Hosts.Add("localhost");
+                        var task = Task.Run(async () =>
                         {
-                            var ping = new PingEntity(timeoutPing: timeoutPing, timeoutTask: timeoutTask, useRepeat: false, useStopWatch: useStopWatch);
-                            ping.Hosts.Add("localhost");
-                            ping.Hosts.Add("google.com");
-                            ping.Hosts.Add("google-fake.com");
-                            var task = Task.Run(async () =>
-                            {
-                                await ping.OpenAsync().ConfigureAwait(true);
-                            });
-                            task.Wait();
-                            TestContext.WriteLine($@"{ping.Status}");
-                        }
+                            await ping.OpenAsync().ConfigureAwait(true);
+                        });
+                        task.Wait();
+                        var taskClose = Task.Run(async () =>
+                        {
+                            await ping.CloseAsync().ConfigureAwait(true);
+                        });
+                        taskClose.Wait();
+                        TestContext.WriteLine($@"{ping.Log}");
                     }));
                 }
             }

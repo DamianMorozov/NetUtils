@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.40] - 2020-12-10
+### Changed
+- Changed target platform of projects
+- Net.Utils.PingEntity: changed Status property to Log and Settings
+### Added
+- Multi-targeted platforms
+  - netstandard2.0
+  - netstandard2.1
+  - net45
+  - net46
+  - net461
+  - net472
+  - net48
+
 ## [0.1.34] - 2020-11-23
 ### Changed
 - Net.Utils.PingEntity: fixed catch exceptions and async method, added info

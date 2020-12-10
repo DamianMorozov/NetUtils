@@ -14,6 +14,15 @@
 - ProxyEntityTests
 - Utils
 
+## Multi-targeted platforms
+- netstandard2.0
+- netstandard2.1
+- net45
+- net46
+- net461
+- net472
+- net48
+
 ## How to use
 ### Example of HttpClientEntity usage
 ```C#

@@ -141,7 +141,6 @@ namespace Net.Utils
             var sw = Stopwatch.StartNew();
             try
             {
-                Status += $"[{sw.Elapsed}] Task started." + Environment.NewLine;
                 Status +=
                     $"[{sw.Elapsed}] IsTaskWait = [{isTaskWait}]. Use proxy = [{proxy.Use}]. Timeout = [{Timeout}]. Url = [{Host}]" +
                     Environment.NewLine;
@@ -176,7 +175,6 @@ namespace Net.Utils
 
         public void Close()
         {
-            Status += "Task stoped." + Environment.NewLine;
             TaskStop = true;
         }
 

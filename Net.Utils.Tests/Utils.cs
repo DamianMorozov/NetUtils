@@ -12,10 +12,12 @@ namespace Net.Utils.Tests
         {
             TestContext.WriteLine(@"--------------------------------------------------------------------------------");
             TestContext.WriteLine($@"{memberName} start.");
+            TestContext.WriteLine();
         }
 
         internal static void MethodComplete([CallerMemberName] string memberName = "")
         {
+            TestContext.WriteLine();
             TestContext.WriteLine($@"{memberName} complete.");
         }
     }
