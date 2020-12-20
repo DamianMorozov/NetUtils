@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
@@ -23,17 +22,6 @@ namespace Net.Utils
         #endregion
 
         #region Public fields and properties
-
-        private bool _taskStop;
-        public bool TaskStop
-        {
-            get => _taskStop;
-            private set
-            {
-                _taskStop = value;
-                OnPropertyRaised();
-            }
-        }
 
         private int _timeout;
         public int Timeout
@@ -59,13 +47,24 @@ namespace Net.Utils
             }
         }
 
-        private string _status;
-        public string Status
+        private string _log;
+        public string Log
         {
-            get => _status;
+            get => _log;
             set
             {
-                _status = value;
+                _log = value;
+                OnPropertyRaised();
+            }
+        }
+
+        private string _settings;
+        public string Settings
+        {
+            get => _settings;
+            set
+            {
+                _settings = value;
                 OnPropertyRaised();
             }
         }
@@ -81,7 +80,18 @@ namespace Net.Utils
             }
         }
 
-        private Task _task;
+        private bool _isStop;
+        public bool IsStop
+        {
+            get => _isStop;
+            set
+            {
+                _isStop = value;
+                OnPropertyRaised();
+            }
+        }
+
+        private object _locker;
 
         #endregion
 
@@ -106,87 +116,76 @@ namespace Net.Utils
         {
             Timeout = timeout;
             Host = host;
-            Status = string.Empty;
             Content = string.Empty;
-            TaskStop = true;
+            IsStop = true;
+
+            Settings = $"Timeout = [{Timeout}]. Url = [{Host}]";
+            Log = string.Empty;
         }
 
         #endregion
 
         #region Public and private methods
 
-        public void OpenTask(bool isTaskWait, ProxyEntity proxy)
+        public async Task<HttpStatusCode> OpenAsync(ProxyEntity proxy = null)
         {
-            if (!(_task is null))
-            {
-                if (_task.Status == TaskStatus.RanToCompletion)
-                {
-                    _task.Dispose();
-                    _task = null;
-                }
-            }
-            _task = Task.Run(async () =>
-            {
-                await OpenTaskAsync(isTaskWait, proxy);
-            });
-            if (isTaskWait)
-                _task.Wait();
-        }
-
-        public async Task OpenTaskAsync(bool isTaskWait, ProxyEntity proxy)
-        {
-            TaskStop = false;
-            Status = string.Empty;
             await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
-            var sw = Stopwatch.StartNew();
-            try
+            HttpStatusCode statusCode = HttpStatusCode.NotFound;
+            if (_locker is null)
             {
-                Status +=
-                    $"[{sw.Elapsed}] IsTaskWait = [{isTaskWait}]. Use proxy = [{proxy.Use}]. Timeout = [{Timeout}]. Url = [{Host}]" +
-                    Environment.NewLine;
-                if (TaskStop) return;
-                using (var httpClient = GetHttpClient(proxy))
+                _locker = new object();
+                Settings += Environment.NewLine + $"Use proxy = [{proxy?.Use}]. " + Environment.NewLine;
+                IsStop = false;
+                try
                 {
-                    if (TaskStop) return;
-                    httpClient.Timeout = TimeSpan.FromMilliseconds(Timeout);
-                    var response = await httpClient.GetAsync(Host).ConfigureAwait(false);
-                    if (TaskStop) return;
-                    Status += $"[{sw.Elapsed}] Status code: {response.StatusCode}" + Environment.NewLine;
-                    Content = await response.Content.ReadAsStringAsync();
-                    if (TaskStop) return;
-                    Status += $"[{sw.Elapsed}] response.IsSuccessStatusCode : {response.IsSuccessStatusCode}" +
-                              Environment.NewLine;
+                    using (var httpClient = await GetHttpClient(proxy))
+                    {
+                        if (IsStop) return statusCode;
+                        httpClient.Timeout = TimeSpan.FromMilliseconds(Timeout);
+                        var response = await httpClient.GetAsync(Host).ConfigureAwait(false);
+                        if (IsStop) return statusCode;
+                        Log += $"Status code: {response.StatusCode}" + Environment.NewLine;
+                        statusCode = response.StatusCode;
+                        Content = await response.Content.ReadAsStringAsync();
+                        Log += $"response.IsSuccessStatusCode : {response.IsSuccessStatusCode}" + Environment.NewLine;
+                    }
+
+                    Log += "Task finished." + Environment.NewLine;
                 }
-                Status += "[{sw.Elapsed}] Task finished." + Environment.NewLine;
+                catch (Exception ex)
+                {
+                    Log += $"{ex.Message}" + Environment.NewLine;
+                    Log += $"{ex.StackTrace}" + Environment.NewLine;
+                    if (ex.InnerException != null)
+                        Log += $"{ex.InnerException.Message}" + Environment.NewLine;
+                }
+                finally
+                {
+                    IsStop = true;
+                    _locker = null;
+                }
             }
-            catch (Exception ex)
-            {
-                Status += $"[{sw.Elapsed}] {ex.Message}" + Environment.NewLine;
-                Status += $"[{sw.Elapsed}] {ex.StackTrace}" + Environment.NewLine;
-                if (ex.InnerException != null)
-                    Status += $"[{sw.Elapsed}] {ex.InnerException.Message}" + Environment.NewLine;
-            }
-            finally
-            {
-                TaskStop = true;
-            }
-            sw.Stop();
+            return statusCode;
         }
 
-        public void Close()
+        public async Task CloseAsync()
         {
-            TaskStop = true;
+            await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
+            IsStop = true;
         }
 
-        public HttpClient GetHttpClient(ProxyEntity proxy)
+        public async Task<HttpClient> GetHttpClient(ProxyEntity proxy = null)
         {
+            await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
+            if (proxy is null)
+            {
+                proxy = new ProxyEntity();
+            }
             if (!proxy.Use)
             {
                 return new HttpClient(new HttpClientHandler { UseProxy = false });
             }
 
-            if (proxy is null)
-                throw new ArgumentException("Poxy is empty!", nameof(proxy));
             var handler = new HttpClientHandler()
             {
                 UseProxy = true,

@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.44] - 2020-12-20
+### Changed
+- Net.Utils.HttpClientEntity: changed Open to OpenAsync method
+- Net.Utils.PingEntity: added BufferSize, Ttl, DontFragment
+- Net.Utils.PingEntity: fixed errors
+- Net.UtilsTests.HttpClientEntityTests
+
 ## [0.1.40] - 2020-12-10
 ### Changed
 - Changed target platform of projects

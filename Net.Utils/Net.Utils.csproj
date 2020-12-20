@@ -12,7 +12,7 @@
       <file src="bin\Release\netstandard2.0\Net.Utils.dll" target="lib\netstandard2.0\Net.Utils.dll" />
       <file src="bin\Release\netstandard2.1\Net.Utils.dll" target="lib\netstandard2.1\Net.Utils.dll" />
     </files>
-    <Version>0.1.40</Version>
+    <Version>0.1.44</Version>
     <title>Net.Utils</title>
     <Authors>Damian Viktorovich Morozov</Authors>
     <Copyright>Copyright (c) 2020</Copyright>
@@ -43,6 +43,8 @@
   - net472
   - net48</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <AssemblyVersion>0.1.44.0</AssemblyVersion>
+    <FileVersion>0.1.44.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

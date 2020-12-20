@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 
 // ReSharper disable UnusedMember.Global
-// Last changed 2020-11-18.
+// Last changed 2020-12-20.
 
-namespace Net.Utils.Tests
+namespace Net.UtilsTests
 {
     /// <summary>
     /// Enumeration of values.
@@ -118,6 +118,15 @@ namespace Net.Utils.Tests
         public static List<int> GetTimeoutMs()
         {
             return new List<int>() { 50, 500 };
+        }
+
+        /// <summary>
+        /// List of bytes.
+        /// </summary>
+        /// <returns></returns>
+        public static List<int> GetBytes()
+        {
+            return new List<int>() { 0, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048 };
         }
     }
 }

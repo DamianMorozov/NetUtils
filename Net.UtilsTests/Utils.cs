@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using NUnit.Framework;
 
-namespace Net.Utils.Tests
+namespace Net.UtilsTests
 {
     /// <summary>
     /// Utilites.

@@ -1,7 +1,8 @@
-﻿using NUnit.Framework;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Net.Utils;
+using NUnit.Framework;
 
-namespace Net.Utils.Tests
+namespace Net.UtilsTests
 {
     [TestFixture]
     internal class HttpClientEntityTests
@@ -57,7 +58,7 @@ namespace Net.Utils.Tests
         }
 
         [Test]
-        public void OpenTask_DoesNotThrow()
+        public void OpenAsyncTask_DoesNotThrow()
         {
             Utils.MethodStart();
 
@@ -65,33 +66,32 @@ namespace Net.Utils.Tests
             {
                 foreach (var host in EnumValues.GetUri())
                 {
-                    foreach (var isTaskWait in EnumValues.GetBool())
+                    Assert.DoesNotThrow(() =>
                     {
-                        Assert.DoesNotThrow(() =>
+                        TestContext.WriteLine($@"Assert.DoesNotThrow. timeout: {timeout}. host: {host}");
+                        var proxy = new ProxyEntity();
+                        var httpClient = new HttpClientEntity(timeout, host);
+                        TestContext.WriteLine($@"{httpClient.Settings}");
+                        var task = Task.Run(async () =>
                         {
-                            TestContext.WriteLine($@"Assert.DoesNotThrow. IsTaskWait: {isTaskWait}. timeout: {timeout}. host: {host}");
-                            var proxy = new ProxyEntity();
-                            var httpClient = new HttpClientEntity(timeout, host);
-                            httpClient.OpenTask(isTaskWait, proxy);
-                            if (isTaskWait)
-                            {
-                                TestContext.WriteLine($@"{httpClient.Status}");
-                                TestContext.WriteLine($@"{httpClient.Content}");
-                            }
+                            await httpClient.OpenAsync(proxy).ConfigureAwait(true);
                         });
-                        Assert.DoesNotThrowAsync(async () => await Task.Run(() =>
+                        task.Wait();
+                        TestContext.WriteLine($@"{httpClient.Log}");
+                    });
+                    Assert.DoesNotThrowAsync(async () => await Task.Run(() =>
+                    {
+                        TestContext.WriteLine($@"Assert.DoesNotThrow. timeout: {timeout}. host: {host}");
+                        var proxy = new ProxyEntity();
+                        var httpClient = new HttpClientEntity(timeout, host);
+                        TestContext.WriteLine($@"{httpClient.Settings}");
+                        var task = Task.Run(async () =>
                         {
-                            TestContext.WriteLine($@"Assert.DoesNotThrow. IsTaskWait: {isTaskWait}. timeout: {timeout}. host: {host}");
-                            var proxy = new ProxyEntity();
-                            var httpClient = new HttpClientEntity(timeout, host);
-                            httpClient.OpenTask(isTaskWait, proxy);
-                            if (isTaskWait)
-                            {
-                                TestContext.WriteLine($@"{httpClient.Status}");
-                                TestContext.WriteLine($@"{httpClient.Content}");
-                            }
-                        }));
-                    }
+                            await httpClient.OpenAsync(proxy).ConfigureAwait(true);
+                        });
+                        task.Wait();
+                        TestContext.WriteLine($@"{httpClient.Log}");
+                    }));
                 }
             }
 

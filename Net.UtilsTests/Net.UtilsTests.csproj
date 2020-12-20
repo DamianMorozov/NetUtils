@@ -9,9 +9,13 @@
 
     <Authors>Damian Viktorovich Morozov</Authors>
 
-    <Version>0.1.40</Version>
+    <Version>0.1.44</Version>
 
     <Copyright>Copyright (c) 2020</Copyright>
+
+    <AssemblyName>Net.UtilsTests</AssemblyName>
+
+    <RootNamespace>Net.UtilsTests</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

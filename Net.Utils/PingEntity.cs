@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -46,7 +45,7 @@ namespace Net.Utils
             }
         }
 
-        private readonly object _locker = new object();
+        private object _locker;
 
         private int _timeoutPing;
         public int TimeoutPing
@@ -55,6 +54,39 @@ namespace Net.Utils
             set
             {
                 _timeoutPing = value;
+                OnPropertyRaised();
+            }
+        }
+
+        private int _bufferSize;
+        public int BufferSize
+        {
+            get => _bufferSize;
+            set
+            {
+                _bufferSize = value;
+                OnPropertyRaised();
+            }
+        }
+
+        private int _ttl;
+        public int Ttl
+        {
+            get => _ttl;
+            set
+            {
+                _ttl = value;
+                OnPropertyRaised();
+            }
+        }
+
+        private bool _dontFragment;
+        public bool DontFragment
+        {
+            get => _dontFragment;
+            set
+            {
+                _dontFragment = value;
                 OnPropertyRaised();
             }
         }
@@ -112,16 +144,23 @@ namespace Net.Utils
             SetupDefault();
         }
 
+        [Obsolete(@"Deprecated method")]
         public PingEntity(int timeoutPing, int timeoutTask, bool useRepeat)
         {
             Setup(timeoutPing, timeoutTask, useRepeat);
         }
 
-        public void SetupDefault()
+        public PingEntity(int timeoutPing, int bufferSize, int ttl, bool dontFragment, int timeoutTask, bool useRepeat)
         {
-            Setup(2_500, 1_000, false);
+            Setup(timeoutPing, bufferSize, ttl, dontFragment, timeoutTask, useRepeat);
         }
 
+        public void SetupDefault()
+        {
+            Setup(2_500, 32, 128, true, 1_000, false);
+        }
+
+        [Obsolete(@"Deprecated method")]
         public void Setup(int timeoutPing, int timeoutRepeat, bool useRepeat)
         {
             TimeoutPing = timeoutPing;
@@ -133,32 +172,56 @@ namespace Net.Utils
             Hosts = new HashSet<string>();
         }
 
+        /// <summary>
+        /// Setup.
+        /// </summary>
+        /// <param name="timeoutPing"></param>
+        /// <param name="bufferSize">default 32</param>
+        /// <param name="ttl">default 128</param>
+        /// <param name="dontFragment">default true</param>
+        /// <param name="timeoutRepeat"></param>
+        /// <param name="useRepeat"></param>
+        public void Setup(int timeoutPing, int bufferSize, int ttl, bool dontFragment, int timeoutRepeat, bool useRepeat)
+        {
+            TimeoutPing = timeoutPing;
+            BufferSize = bufferSize;
+            Ttl = ttl;
+            DontFragment = dontFragment;
+            TimeoutRepeat = timeoutRepeat;
+            UseRepeat = useRepeat;
+
+            IsStop = true;
+            Hosts = new HashSet<string>();
+
+            Settings = $"Ping settings: TimeoutPing = [{TimeoutPing}], BufferSize: [{BufferSize}], Ttl: [{Ttl}], DontFragment:[{DontFragment}], " +
+                       $"UseRepeat = [{UseRepeat}], TimeoutRepeat = [{TimeoutRepeat}].";
+            Log = string.Empty;
+        }
+
         #endregion
 
         #region Public and private methods
 
         public void Open()
         {
-            lock (_locker)
+            if (_locker is null)
             {
-                Settings = string.Empty;
-                Log = string.Empty;
-                var sw = Stopwatch.StartNew();
+                _locker = new object();
                 try
                 {
-                    Settings += $"Ping settings: TimeoutPing = [{TimeoutPing}], UseRepeat = [{UseRepeat}], TimeoutRepeat = [{TimeoutRepeat}]."
-                                + Environment.NewLine;
                     IsStop = false;
                     do
                     {
-                        using (var ping = new Ping())
+                        foreach (var host in Hosts)
                         {
-                            foreach (var host in Hosts)
+                            try
                             {
-                                try
+                                using (var ping = new Ping())
                                 {
                                     if (IsStop) return;
-                                    var reply = ping.Send(host.Trim(), TimeoutPing);
+                                    var buffer = new byte[BufferSize];
+                                    var pingOptions = new PingOptions(Ttl, DontFragment);
+                                    var reply = ping.Send(host.Trim(), TimeoutPing, buffer, pingOptions);
                                     if (reply is null)
                                     {
                                         Log += "Reply is null" + Environment.NewLine;
@@ -169,12 +232,10 @@ namespace Net.Utils
                                         Log += $"Reply from {reply.Address}: status = {reply.Status}, roundtrip time = {reply.RoundtripTime} ms, TTL = {reply.Options.Ttl}" + Environment.NewLine;
                                     }
                                 }
-                                catch (PingException pex)
-                                {
-                                    Log += $"Ping exception: {pex.Message}" + Environment.NewLine;
-                                    //if (!(pex.InnerException is null))
-                                    //    Log += $"Ping inner exception: {pex.InnerException.Message}" + Environment.NewLine;
-                                }
+                            }
+                            catch (PingException pex)
+                            {
+                                Log += $"Ping exception: {pex.Message}" + Environment.NewLine;
                             }
                             System.Threading.Thread.Sleep(TimeoutRepeat);
                             if (UseRepeat)
@@ -188,13 +249,12 @@ namespace Net.Utils
                     Log += $"Ping exception: {ex.Message}" + Environment.NewLine;
                     if (!(ex.InnerException is null))
                         Log += $"Ping inner exception: {ex.InnerException.Message}" + Environment.NewLine;
-                    throw;
                 }
                 finally
                 {
                     IsStop = true;
+                    _locker = null;
                 }
-                sw.Stop();
             }
         }
 

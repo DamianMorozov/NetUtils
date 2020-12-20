@@ -110,7 +110,7 @@ namespace Net.Utils
 
         public void SetupDefault()
         {
-            Setup(false, false, new Uri(@"http://localhost"), 8080,
+            Setup(false, false, new Uri(@"https://localhost"), 8080,
                     string.Empty, string.Empty, string.Empty);
         }
 
