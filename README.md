@@ -3,12 +3,12 @@
 [![NuGet version](https://img.shields.io/nuget/v/Net.Utils.svg?style=flat)](https://www.nuget.org/packages/Net.Utils/)
 [![NuGet downloads](https://img.shields.io/nuget/dt/Net.Utils.svg)](https://www.nuget.org/packages/Net.Utils/)
 
-# Net.Utils
+# NetUtils
 - HttpClientEntity
 - PingEntity
 - ProxyEntity
 
-# Net.Utils.Tests
+# NetUtilsTests
 - EnumValues
 - HttpClientEntityTests
 - ProxyEntityTests
@@ -52,11 +52,7 @@ TestContext.WriteLine($@"{ping.Log}");
 ```C#
 var proxy = new Net.Utils.ProxyEntity(use, useDefaultCredentials, host, port, domain, username, password);
 ```
-## Net.Examples
-[Visit this repo for view examples](https://github.com/DamianMorozov/Net.Examples)
-
-## Telegram bot
-[@NetUtilsBot](tg://resolve?domain=NetUtilsBot)
+## NetExamples
+[Visit this repo for view examples](https://github.com/DamianMorozov/NetExamples)
 
 ### Please, if this tool has been useful for you consider to donate or click on the `star` button
-[![Buy me a coffee](Assets/Buy_me_a_coffee.png?raw=true)](https://www.buymeacoffee.com/DamianVM)
