@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 // ReSharper disable UnusedMember.Global
 
-namespace Net.Utils
+namespace NetUtils
 {
     public class PingEntity : INotifyPropertyChanged
     {

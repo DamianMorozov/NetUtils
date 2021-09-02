@@ -1,7 +1,7 @@
-# **Net.Utils** - Network utilities.
+# **NetUtils** - Network utilities.
 
-[![NuGet version](https://img.shields.io/nuget/v/Net.Utils.svg?style=flat)](https://www.nuget.org/packages/Net.Utils/)
-[![NuGet downloads](https://img.shields.io/nuget/dt/Net.Utils.svg)](https://www.nuget.org/packages/Net.Utils/)
+[![NuGet version](https://img.shields.io/nuget/v/NetUtils.svg?style=flat)](https://www.nuget.org/packages/NetUtils/)
+[![NuGet downloads](https://img.shields.io/nuget/dt/NetUtils.svg)](https://www.nuget.org/packages/NetUtils/)
 
 # NetUtils
 - HttpClientEntity
@@ -22,6 +22,7 @@
 - net461
 - net472
 - net48
+- net50
 
 ## How to use
 ### Example of HttpClientEntity usage
@@ -50,7 +51,7 @@ TestContext.WriteLine($@"{ping.Log}");
 ```
 ### Example of ProxyEntity usage
 ```C#
-var proxy = new Net.Utils.ProxyEntity(use, useDefaultCredentials, host, port, domain, username, password);
+var proxy = new NetUtils.ProxyEntity(use, useDefaultCredentials, host, port, domain, username, password);
 ```
 ## NetExamples
 [Visit this repo for view examples](https://github.com/DamianMorozov/NetExamples)

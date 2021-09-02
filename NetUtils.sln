@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Net.Utils", "Net.Utils\Net.Utils.csproj", "{EC243C84-BB8E-4528-A497-E3D1B6267221}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetUtils", "NetUtils\NetUtils.csproj", "{EC243C84-BB8E-4528-A497-E3D1B6267221}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Net.UtilsTests", "Net.UtilsTests\Net.UtilsTests.csproj", "{EAD8A25A-EE24-4FA4-96FA-1278052BC677}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetUtilsTests", "NetUtilsTests\NetUtilsTests.csproj", "{EAD8A25A-EE24-4FA4-96FA-1278052BC677}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

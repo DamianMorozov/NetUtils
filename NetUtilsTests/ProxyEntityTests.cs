@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using Net.Utils;
+﻿using NetUtils;
 using NUnit.Framework;
+using System.Threading.Tasks;
 
-namespace Net.UtilsTests
+namespace NetUtilsTests
 {
     [TestFixture]
     internal class ProgramTests

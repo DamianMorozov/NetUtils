@@ -6,17 +6,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.50] - 2021-09-02
+### Changed
+- NetUtils namespace
+### Added
+- Net50 support
+- Net60 support
+
 ## [0.1.44] - 2020-12-20
 ### Changed
-- Net.Utils.HttpClientEntity: changed Open to OpenAsync method
-- Net.Utils.PingEntity: added BufferSize, Ttl, DontFragment
-- Net.Utils.PingEntity: fixed errors
-- Net.UtilsTests.HttpClientEntityTests
+- NetUtils.HttpClientEntity: changed Open to OpenAsync method
+- NetUtils.PingEntity: added BufferSize, Ttl, DontFragment
+- NetUtils.PingEntity: fixed errors
+- NetUtilsTests.HttpClientEntityTests
 
 ## [0.1.40] - 2020-12-10
 ### Changed
 - Changed target platform of projects
-- Net.Utils.PingEntity: changed Status property to Log and Settings
+- NetUtils.PingEntity: changed Status property to Log and Settings
 ### Added
 - Multi-targeted platforms
   - netstandard2.0
@@ -29,36 +36,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.34] - 2020-11-23
 ### Changed
-- Net.Utils.PingEntity: fixed catch exceptions and async method, added info
-- Net.Utils.Tests.PingEntityTests: fixed catch exceptions and async method
+- NetUtils.PingEntity: fixed catch exceptions and async method, added info
+- NetUtils.Tests.PingEntityTests: fixed catch exceptions and async method
 
 ## [0.1.31] - 2020-11-22
 ### Changed
-- Net.Utils.HttpClientEntity: fixed INotifyPropertyChanged
-- Net.Utils.PingEntity: fixed INotifyPropertyChanged
+- NetUtils.HttpClientEntity: fixed INotifyPropertyChanged
+- NetUtils.PingEntity: fixed INotifyPropertyChanged
 
 ## [0.1.30] - 2020-11-18
 ### Changed
-- Net.Utils.HttpClientEntity: fixed bugs
-- Net.Utils.PingEntity: fixed bugs
-- Net.Utils.Tests.HttpClientEntityTests
-- Net.Utils.Tests.PingEntityTests
+- NetUtils.HttpClientEntity: fixed bugs
+- NetUtils.PingEntity: fixed bugs
+- NetUtils.Tests.HttpClientEntityTests
+- NetUtils.Tests.PingEntityTests
 
 ## [0.1.21] - 2020-11-08
 ### Added
-- Net.Utils.PingEntity
-- Net.Utils.Tests.PingEntityTests
+- NetUtils.PingEntity
+- NetUtils.Tests.PingEntityTests
 ### Changed
-- Net.Utils.HttpClientEntity
-- Net.Utils.Tests.HttpClientEntityTests
+- NetUtils.HttpClientEntity
+- NetUtils.Tests.HttpClientEntityTests
 
 ## [0.1.13] - 2020-11-07
 ### Added
-- Net.Utils project
-- Net.Utils.HttpClientEntity
-- Net.Utils.ProxyEntity
-- Net.Utils.Tests project
-- Net.Utils.Tests.HttpClientEntityTests
-- Net.Utils.Tests.EnumValues
-- Net.Utils.Tests.ProxyEntityTests
-- Net.Utils.Tests.Utils
+- NetUtils project
+- NetUtils.HttpClientEntity
+- NetUtils.ProxyEntity
+- NetUtils.Tests project
+- NetUtils.Tests.HttpClientEntityTests
+- NetUtils.Tests.EnumValues
+- NetUtils.Tests.ProxyEntityTests
+- NetUtils.Tests.Utils

@@ -13,9 +13,9 @@
 
     <Copyright>Copyright (c) 2020</Copyright>
 
-    <AssemblyName>Net.UtilsTests</AssemblyName>
+    <AssemblyName>NetUtilsTests</AssemblyName>
 
-    <RootNamespace>Net.UtilsTests</RootNamespace>
+    <RootNamespace>NetUtilsTests</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Net.Utils\Net.Utils.csproj" />
+    <ProjectReference Include="..\NetUtils\NetUtils.csproj" />
   </ItemGroup>
 
 </Project>

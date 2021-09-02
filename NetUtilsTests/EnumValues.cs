@@ -4,7 +4,7 @@ using System.Collections.Generic;
 // ReSharper disable UnusedMember.Global
 // Last changed 2020-12-20.
 
-namespace Net.UtilsTests
+namespace NetUtilsTests
 {
     /// <summary>
     /// Enumeration of values.

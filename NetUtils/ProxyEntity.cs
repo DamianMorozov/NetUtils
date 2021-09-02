@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 // ReSharper disable UnusedMember.Global
 
-namespace Net.Utils
+namespace NetUtils
 {
     public class ProxyEntity : INotifyPropertyChanged
     {

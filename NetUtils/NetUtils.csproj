@@ -1,38 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net45;net46;net461;net472;net48</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net45;net46;net461;net472;net48;net50;net60;</TargetFrameworks>
     <files>
-      <file src="bin\Release\net45\Net.Utils.dll" target="lib\net45\Net.Utils.dll" />
-      <file src="bin\Release\net46\Net.Utils.dll" target="lib\net46\Net.Utils.dll" />
-      <file src="bin\Release\net461\Net.Utils.dll" target="lib\net461\Net.Utils.dll" />
-      <file src="bin\Release\net47\Net.Utils.dll" target="lib\net47\Net.Utils.dll" />
-      <file src="bin\Release\net472\Net.Utils.dll" target="lib\net472\Net.Utils.dll" />
-      <file src="bin\Release\net48\Net.Utils.dll" target="lib\net48\Net.Utils.dll" />
-      <file src="bin\Release\netstandard2.0\Net.Utils.dll" target="lib\netstandard2.0\Net.Utils.dll" />
-      <file src="bin\Release\netstandard2.1\Net.Utils.dll" target="lib\netstandard2.1\Net.Utils.dll" />
+      <file src="bin\Release\net45\NetUtils.dll" target="lib\net45\NetUtils.dll" />
+      <file src="bin\Release\net46\NetUtils.dll" target="lib\net46\NetUtils.dll" />
+      <file src="bin\Release\net461\NetUtils.dll" target="lib\net461\NetUtils.dll" />
+      <file src="bin\Release\net47\NetUtils.dll" target="lib\net47\NetUtils.dll" />
+      <file src="bin\Release\net472\NetUtils.dll" target="lib\net472\NetUtils.dll" />
+      <file src="bin\Release\net48\NetUtils.dll" target="lib\net48\NetUtils.dll" />
+      <file src="bin\Release\net50\NetUtils.dll" target="lib\net50\NetUtils.dll" />
+      <file src="bin\Release\net60\NetUtils.dll" target="lib\net60\NetUtils.dll" />
+      <file src="bin\Release\netstandard2.0\NetUtils.dll" target="lib\netstandard2.0\NetUtils.dll" />
+      <file src="bin\Release\netstandard2.1\NetUtils.dll" target="lib\netstandard2.1\NetUtils.dll" />
     </files>
-    <Version>0.1.44</Version>
-    <title>Net.Utils</title>
+    <Version>0.1.50</Version>
+    <title>NetUtils</title>
     <Authors>Damian Viktorovich Morozov</Authors>
-    <Copyright>Copyright (c) 2020</Copyright>
+    <Copyright>Copyright (c) 2020 - 2021</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
-    <projectUrl>https://github.com/DamianMorozov/Net.Utils/</projectUrl>
+    <projectUrl>https://github.com/DamianMorozov/NetUtils/</projectUrl>
     <tags>net network utils utilities</tags>
     <RepositoryType>Github</RepositoryType>
-    <RepositoryUrl>https://github.com/DamianMorozov/Net.Utils/</RepositoryUrl>
+    <RepositoryUrl>https://github.com/DamianMorozov/NetUtils/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageProjectUrl>https://github.com/DamianMorozov/Net.Utils/</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/DamianMorozov/NetUtils/</PackageProjectUrl>
     <PackageLicenseFile></PackageLicenseFile>
     <Description>Network utilities</Description>
     <PackageTags>net, utils, network, utilities</PackageTags>
     <PackageReleaseNotes>### Changed
 - Changed target platform of projects
-- Net.Utils.PingEntity: changed Status property to Log and Settings
+- NetUtils.PingEntity: changed Status property to Log and Settings
 ### Added
 - Multi-targeted platforms
   - netstandard2.0
@@ -41,15 +43,33 @@
   - net46
   - net461
   - net472
-  - net48</PackageReleaseNotes>
+  - net48
+  - net50
+  - net60</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <AssemblyVersion>0.1.44.0</AssemblyVersion>
-    <FileVersion>0.1.44.0</FileVersion>
+    <AssemblyVersion>0.1.50.0</AssemblyVersion>
+    <FileVersion>0.1.50.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net50|AnyCPU'">
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net50|AnyCPU'">
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net60|AnyCPU'">
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net60|AnyCPU'">
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
   <ItemGroup>
